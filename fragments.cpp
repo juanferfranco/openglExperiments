@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 
 
-// Callback: ajusta el viewport cuando cambie el tamaño de la ventana
+// Callback: ajusta el viewport cuando cambie el tama?o de la ventana
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
@@ -14,38 +14,26 @@ void processInput(GLFWwindow* window) {
 		glfwSetWindowShouldClose(window, true);
 }
 
-// Tamaño de las ventanas
+// Tama?o de las ventanas
 const unsigned int SCR_WIDTH = 400;
 const unsigned int SCR_HEIGHT = 400;
 
 // Fuentes de los shaders
 const char* vertexShaderSrc = R"glsl(
     #version 460 core
-
     layout(location = 0) in vec3 aPos;
-    uniform float uOffsetX;
-
     void main() {
-        gl_Position = vec4(
-            aPos.x + uOffsetX,
-            aPos.y,
-            aPos.z,
-            1.0
-        );
+        gl_Position = vec4(aPos, 1.0);
     }
 )glsl";
 
 const char* fragmentShaderSrc = R"glsl(
     #version 460 core
-
-    uniform vec3 uColor;
     out vec4 FragColor;
-
     void main() {
-        FragColor = vec4(uColor, 1.0);
+        FragColor = vec4(1.0, 0.5, 0.2, 1.0);
     }
 )glsl";
-
 
 // IDs globales
 unsigned int VAO, VBO;
@@ -89,7 +77,7 @@ unsigned int buildShaderProgram() {
 	return prog;
 }
 
-// Crea un VAO/VBO con los datos de un triángulo
+// Crea un VAO/VBO con los datos de un tri?ngulo
 void setupTriangle() {
 	float vertices[] = {
 		-0.5f, -0.5f, 0.0f,
@@ -127,10 +115,10 @@ int main()
 		return -1;
 	}
 
-	// 3) Lee el tamaño del framebuffer
+	// 3) Lee el tama?o del framebuffer
 	int bufferWidth, bufferHeight;
 	glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
-	
+
 	// 4) Callbacks 
 	glfwSetFramebufferSizeCallback(mainWindow, framebuffer_size_callback);
 
@@ -155,14 +143,6 @@ int main()
 	// 9) Configura el viewport
 	glViewport(0, 0, bufferWidth, bufferHeight);
 
-	int offsetLoc = glGetUniformLocation(shaderProg, "uOffsetX");
-	int colorLoc = glGetUniformLocation(shaderProg, "uColor");
-
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_MULTISAMPLE);
-
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE, GL_ONE);
 
 	// 10) Loop principal
 	while (!glfwWindowShouldClose(mainWindow))
@@ -170,28 +150,19 @@ int main()
 		// 11) Manejo de eventos
 		glfwPollEvents();
 
-	
+
 		// 12) Procesa la entrada
 		processInput(mainWindow);
 
+		// 13) Configura el color de fondo y limpia el framebuffer
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		if (glfwGetKey(mainWindow, GLFW_KEY_B) == GLFW_PRESS) {
-			glEnable(GL_BLEND);
-		}
-		else {
-			glDisable(GL_BLEND);
-		}
-
+		// 14) Indica a OpenGL que use el shader program
 		glUseProgram(shaderProg);
+
+		// 15) Activa el VAO y dibuja el tri?ngulo
 		glBindVertexArray(VAO);
-
-		glUniform1f(offsetLoc, -0.2f);
-		glUniform3f(colorLoc, 1.0f, 0.0f, 0.0f);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		glUniform1f(offsetLoc, 0.2f);
-		glUniform3f(colorLoc, 0.0f, 1.0f, 0.0f);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// 16) Intercambia buffers y muestra el contenido
