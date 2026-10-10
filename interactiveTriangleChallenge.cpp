@@ -1,8 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/trigonometric.hpp>
-
+#include <cmath>
 
 // Callback: ajusta el viewport cuando cambie el tamaño de la ventana
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -183,7 +182,7 @@ int main()
 
 		// Envío el color del triángulo
 		float tiempo = static_cast<float>(glfwGetTime());
-		float azul = (glm::sin(tiempo) + 1.0f) / 2.0f;
+		float azul = (std::sin(tiempo) + 1.0f) / 2.0f;
 
 		glUniform4f(colorLocation, x, y, azul, 1.0f);
 
